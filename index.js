@@ -13,7 +13,7 @@ let scene = new THREE.Scene();
 let camera, uniforms, fov;
 const container = document.getElementById('canvas');
 const perspective = 800;
-let renderer = new THREE.WebGL1Renderer ({
+let renderer = new THREE.WebGLRenderer ({
   //canvas: container,
   antialias: true,
   alpha: true,
