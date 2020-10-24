@@ -7,13 +7,19 @@ const fontFile = require('/asset/OpenSansfnt/OpenSans-Regular.fnt');
 const fontAtlas = require('/asset/OpenSansfnt/OpenSans-Regular.png');
 
 import * as THREE from 'three';
+import gsap from 'gsap';
+import vertexShader from '/glsl/vertexShader.glsl';
+import fragmentShader from '/glsl/fragmentShader.glsl';
 
 // init scene and camera 
 let scene = new THREE.Scene();
 let camera, uniforms, fov;
+let mesh, material;
+let mouse = new THREE.Vector2(0,0);
+
 const container = document.getElementById('canvas');
 const perspective = 800;
-let renderer = new THREE.WebGLRenderer ({
+let renderer = new THREE.WebGL1Renderer ({
   //canvas: container,
   antialias: true,
   alpha: true,
@@ -26,8 +32,8 @@ renderer.setPixelRatio(window.devicePixelRatio);
 
 initLights();
 initCamera();
+loadBMF();
 onWindowResize();
-update ();
 
 
 function initLights() {
@@ -54,14 +60,18 @@ function onWindowResize (event) {
 }
 
 function onMouseMove (event) {
-  // gsap.to(mouse, 0.5, {
-  //   x: event.clientX,
-  //   y: event.clientY,
-  // });
+  gsap.to(mouse, 0.5, {
+    x: event.clientX,
+    y: event.clientY,
+  });
 }
 
 // Update
 function update() {
+
+  mesh.material.uniforms.time.value = clock.getElapsedTime();
+  mesh.material.uniformsNeedUpdate = true;
+
   requestAnimationFrame( update );
   renderer.render(scene, camera);
   //mesh.rotation.y += 0.01;
@@ -76,35 +86,49 @@ if ('ontouchstart' in window){
 
 
 //load font
-loadFont(fontFile, (err, font) => {
-  // Create a geometry of packed bitmap glyphs
-  const geometry = createGeometry({
-    font: font,
-    text: 'OCEAN'
+function loadBMF() {
+  loadFont(fontFile, (err, font) => {
+    // Create a geometry of packed bitmap glyphs
+    const geometry = createGeometry({
+      font: font,
+      text: 'TECHNO\nGENDER\nFLUID'
+    });
+    
+    // Load texture containing font glyphs
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(fontAtlas, (texture) => {
+      // Start and animate renderer
+      initFont(geometry, texture);
+      update();
+    });
   });
-  
-  // Load texture containing font glyphs
-  const textureLoader = new THREE.TextureLoader();
-  textureLoader.load(fontAtlas, (texture) => {
-    // Start and animate renderer
-    initFont(geometry, texture);
-  });
-});
 
-function initFont(geometry, texture) {
-  // Create material with msdf shader from three-bmfont-text
-  const material = new THREE.RawShaderMaterial(MSDFShader({
-    map: texture,
-    color: 0x0000ff, // We'll remove it later when defining the fragment shader
-    side: THREE.DoubleSide,
-    transparent: true,
-    negate: false,
-  }));
+  function initFont(geometry, texture) {
+    // Create material with msdf shader from three-bmfont-text
+    material = new THREE.RawShaderMaterial(MSDFShader({
+      vertexShader,
+      fragmentShader,
+      map: texture,
+      //color: 0x353535, // We'll remove it later when defining the fragment shader
+      side: THREE.DoubleSide,
+      transparent: true,
+      negate: false,
+    }));
 
-  // Create mesh of text       
-  let mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(-80, 0, 0); // Move according to text size
-  mesh.rotation.set(Math.PI, 0, 0); // Spin to face correctly
-  scene.add(mesh);
+    material.uniforms.time = { type: 'f', value: 0.0 };
+    material.uniforms.u_mouse = { value: mouse};
+    material.uniforms.u_res = { value: new THREE.Vector2(window.innerWidth, window.innerHeight)};
+
+
+
+    // Create mesh of text       
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.set(2,2,2);
+    mesh.position.set(-200, -100, 0); // Move according to text size
+    mesh.rotation.set(Math.PI, 0, 0); // Spin to face correctly
+    scene.add(mesh);
+  }
 }
+
+
 
