@@ -23,5 +23,5 @@ void main() {
   // Oscillate vertices inside/outside
   p.z += (sin(p.x * frequency2 + time) * 0.5 + 0.5) * amplitude2;
 
-  gl_Position = projectionMatrix * modelViewMatrix * position;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xyz, 1.0);
 }

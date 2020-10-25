@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "MonumentExtended-Regular";
+
+  src: url("../asset/monument_fonts/MonumentExtended-Regular.woff") format("woff"), /* Modern Browsers */
+    url("../asset/monument_fonts/MonumentExtended-Regular.woff2") format("woff2"); /* Modern Browsers */
+  font-weight: normal;
+  font-style: normal;
+}
+
 *{
 	margin: 0;
 }
