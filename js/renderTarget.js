@@ -3,8 +3,8 @@ const createGeometry = require('three-bmfont-text');
 const loadFont = require('load-bmfont');
 const MSDFShader = require('three-bmfont-text/shaders/msdf');
 
-const fontFile = require('../asset/OpenSansfnt/OpenSans-Regular.fnt');
-const fontAtlas = require('../asset/OpenSansfnt/OpenSans-Regular.png');
+const fontFile = require('../asset/monument_fonts/MonumentExtended-Regular.fnt');
+const fontAtlas = require('../asset/monument_fonts/MonumentExtended-Regular.png');
 
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -105,7 +105,7 @@ function loadBMF() {
           side: THREE.DoubleSide,
           transparent: true,
           negate: false,
-          color: 0xffffff,
+          color: 0x313131,
         })
       );
 
@@ -138,7 +138,7 @@ function createRenderTarget() {
   // Adjust text dimensions
   text.position.set(-0.75, -0.5, 0);
   text.rotation.set(Math.PI, 0, 0);
-  text.scale.set(0.009, 0.009, 1);
+  text.scale.set(0.006, 0.006, 1);
 
   // Add text to RT scene
   rtScene.add(text);
@@ -170,7 +170,7 @@ function createPlane() {
   });
 
   plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.scale.set(500,500,0);
+  plane.scale.set(800,800,0);
 
   scene.add(plane);
 }
