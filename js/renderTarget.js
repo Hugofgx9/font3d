@@ -15,9 +15,13 @@ import fragmentShader from '../glsl/fragmentShaderPlane.glsl';
 let scene = new THREE.Scene();
 let camera, uniforms, fov;
 let text, fontMaterial, fontGeometry;
+let planeMaterial, planeGeometry;
 let rt, rtCamera, rtScene, plane;
 
 let mouse = new THREE.Vector2(0,0);
+let mouseSpeed, timestamp, mY;
+timestamp = mY = 0;
+
 const container = document.getElementById('canvas');
 const perspective = 800;
 let renderer = new THREE.WebGLRenderer ({
@@ -65,12 +69,29 @@ function onMouseMove (event) {
     x: event.clientX,
     y: event.clientY,
   });
+
+  //mouseSpeedUpdate(event);
+}
+
+function mouseSpeedUpdate(event) {
+  let now = Date.now();
+  currentmY = event.screenY;
+
+  let dt = now - timestamp;
+  let distance = Math.abs(currentmY - mY);
+  let speed = Math.round(distance / dt * 1000);
+
+  mouseSpeed = speed.toFixed(1);
+
+  mY = currentmY;
+  timestamp = now;
 }
 
 // Update
 function update() {
 
   requestAnimationFrame( update );
+  planeMaterial.uniforms.u_time.value = clock.getElapsedTime();
   renderer.setRenderTarget(rt);
   renderer.render(rtScene, rtCamera);
 
@@ -93,7 +114,7 @@ function loadBMF() {
     // Create a geometry of packed bitmap glyphs
     fontGeometry = createGeometry({
       font: font,
-      text: 'TECHNO\nGENDER\nFLUID'
+      text: 'FLUIDITY'
     });
     
     // Load texture containing font glyphs
@@ -128,7 +149,7 @@ function createRenderTarget() {
   );
 
   rtCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-  rtCamera.position.z = 2;
+  rtCamera.position.z = 2.5;
 
   rtScene = new THREE.Scene();
   //rtScene.background = new THREE.Color("#000000");
@@ -136,7 +157,7 @@ function createRenderTarget() {
   text = new THREE.Mesh(fontGeometry, fontMaterial);
 
   // Adjust text dimensions
-  text.position.set(-0.75, -0.5, 0);
+  text.position.set(-0.75, -0.4, 0);
   text.rotation.set(Math.PI, 0, 0);
   text.scale.set(0.006, 0.006, 1);
 
@@ -151,9 +172,9 @@ function createRenderTarget() {
 }
 
 function createPlane() {
-  let planeGeometry = new THREE.PlaneGeometry(1, 1, 1);
+  planeGeometry = new THREE.PlaneGeometry(1, 1, 1);
 
-  let planeMaterial = new THREE.ShaderMaterial({
+  planeMaterial = new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
     uniforms: {
@@ -161,6 +182,7 @@ function createPlane() {
       u_texture: { value: rt.texture },
       u_mouse: { value: mouse },
       u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+      u_speed: { value: mouseSpeed },
     },
     defines: {
     // tofixed(1) tronque le nombre avec 1 nombre après la virgule

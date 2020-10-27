@@ -13,6 +13,7 @@
     "asset": "^0.4.13",
     "glsl": "0.0.1",
     "glsl-hsl2rgb": "^1.1.0",
+    "glsl-noise": "0.0.0",
     "glslify": "^7.1.1",
     "gsap": "^3.5.1",
     "load-bmfont": "^1.4.1",
