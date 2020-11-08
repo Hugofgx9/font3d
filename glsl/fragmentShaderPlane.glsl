@@ -42,7 +42,6 @@ void main() {
 		float c = circle(st, mouse, 0.0001, 700.);
 
 	//noise
-
 	float offx = (v_uv.x * 5.);
 	float offy = u_time * 0.1;
 
@@ -50,9 +49,10 @@ void main() {
 
 	float sin1 = (sin(v_uv.x * 100.) / 2. + 0.5);
 
-  vec4 texture = texture2D(u_texture, vec2(newUV.x, newUV.y + noise * 0.2));
-  //vec4 dmTexture = texture2D(u_dataMoshTexture, newUV);
-  vec4 finalTexture = texture;
+  // import & adjust textures
+  vec4 textureData = texture2D(u_dataMoshTexture, newUV);
+  vec4 texture1 = texture2D(u_texture, vec2(newUV));
+  vec4 finalTexture = texture1;
 
   //gl_FragColor = texture;
   gl_FragColor = vec4( vec3(finalTexture), finalTexture.a);
