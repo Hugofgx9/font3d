@@ -6,6 +6,7 @@
 varying vec2 v_uv;
 
 uniform sampler2D u_texture;
+uniform sampler2D u_dataMoshTexture;
 uniform vec2 u_res;
 uniform vec2 u_mouse;
 uniform float u_time;
@@ -50,7 +51,9 @@ void main() {
 	float sin1 = (sin(v_uv.x * 100.) / 2. + 0.5);
 
   vec4 texture = texture2D(u_texture, vec2(newUV.x, newUV.y + noise * 0.2));
+  //vec4 dmTexture = texture2D(u_dataMoshTexture, newUV);
+  vec4 finalTexture = texture;
 
   //gl_FragColor = texture;
-  gl_FragColor = vec4( vec3(texture), texture.a);
+  gl_FragColor = vec4( vec3(finalTexture), finalTexture.a);
 }

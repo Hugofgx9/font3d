@@ -5,6 +5,7 @@ const MSDFShader = require('three-bmfont-text/shaders/msdf');
 
 const fontFile = require('../asset/monument_fonts/MonumentExtended-Regular.fnt');
 const fontAtlas = require('../asset/monument_fonts/MonumentExtended-Regular.png');
+const imgDataMosh = require('../asset/img/datamoshing5.64e20d78.jpg');
 
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -125,12 +126,16 @@ class threeFont {
 	createPlane() {
 		this.planeGeometry = new THREE.PlaneGeometry(1, 1, 1);
 
+		this.loaderData = new THREE.TextureLoader();
+		this.dataMoshTexture = this.loaderData.load(this.options.imgDataMosh);
+
 		this.planeMaterial = new THREE.ShaderMaterial({
 			vertexShader: this.options.planeVertexShader,
 			fragmentShader: this.options.planeFragmentShader,
 			uniforms: {
-				u_time: { value: 0 },
-				u_texture: { value: this.rt.texture },
+				u_time: { type: 'f', value: 0 },
+				u_texture: { type: 't', value: this.rt.texture },
+				u_dataMoshTexture: { type: 't', value: this.dataMoshTexture },
 				u_mouse: { value: this.mouse },
 				u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
 				u_speed: { value: this.mouseSpeed },
@@ -172,7 +177,7 @@ class threeFont {
 			if ('ontouchstart' in window) {
 			document.addEventListener('touchmove', (ev) => { this.onMouseMove(ev) });
 		} else {
-			window.addEventListener( 'resize', this.onWindowResize, false );
+			window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
 			document.addEventListener('mousemove', (ev) => { this.onMouseMove(ev) });
 		}
 	}
@@ -210,4 +215,5 @@ const font = new threeFont( {
 	planeFragmentShader: fragmentShader,
 	fontFile: fontFile,
 	fontAtlas: fontAtlas,
+	imgDataMosh: imgDataMosh,
 });
