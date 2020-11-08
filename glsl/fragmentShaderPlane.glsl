@@ -37,9 +37,11 @@ void main() {
 	  );
 	 	mouse *= .5;
 	  mouse.y *= res.y / res.x;
+
+	  float mouseSpeed = u_speed;
 		
 		//vec2 circlePos = (mouse);
-		float c = circle(st, mouse, 0.0001, 700.);
+		float c = circle(st, mouse, mouseSpeed, 1.) * 0.1;
 
 	//noise
 	float offx = (v_uv.x * 5.);
@@ -51,7 +53,9 @@ void main() {
 
   // import & adjust textures
   vec4 textureData = texture2D(u_dataMoshTexture, newUV);
-  vec4 texture1 = texture2D(u_texture, vec2(newUV));
+  float BWdata = ((textureData.r + textureData.g + textureData.b) / 3.) * 0.5;
+  float deformation = ( c * BWdata);
+  vec4 texture1 = texture2D(u_texture, newUV + deformation );
   vec4 finalTexture = texture1;
 
   //gl_FragColor = texture;

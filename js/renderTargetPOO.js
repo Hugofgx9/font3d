@@ -21,7 +21,8 @@ class threeFont {
 		this.scene = new THREE.Scene();
 
 		this.mouse = new THREE.Vector2(0,0);
-		this.timestamp = this.mY = 0;
+		this.prevMouse = new THREE.Vector2(0,0);
+		this.speed = this.targetSpeed = 0;
 
 		this.container = document.getElementById('canvas');
 		this.perspective = 800;
@@ -138,7 +139,7 @@ class threeFont {
 				u_dataMoshTexture: { type: 't', value: this.dataMoshTexture },
 				u_mouse: { value: this.mouse },
 				u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
-				u_speed: { value: this.mouseSpeed },
+				u_speed: { value: this.targetSpeed },
 			},
 			defines: {
 			// tofixed(1) tronque le nombre avec 1 nombre après la virgule
@@ -156,14 +157,15 @@ class threeFont {
 	// Update
 	update() {
 
-		requestAnimationFrame( this.update.bind(this) );
+		this.getSpeed();
 		this.plane.material.uniforms.u_time.value = this.clock.getElapsedTime();
+		this.plane.material.uniforms.u_speed.value = Math.max( 0.0001, Math.min(this.targetSpeed / 1000., 0.3));
 		this.renderer.setRenderTarget(this.rt);
 		this.renderer.render(this.rtScene, this.rtCamera);
 
 		this.renderer.setRenderTarget(null);
 		this.renderer.render(this.scene, this.camera);
-		//mesh.rotation.y += 0.01;
+		requestAnimationFrame( this.update.bind(this) );
 	}
 
 	updateCamera() {
@@ -192,21 +194,31 @@ class threeFont {
 			x: event.clientX,
 			y: event.clientY,
 		});
-		//mouseSpeedUpdate(event);
 	}
+
+  getSpeed(){
+    this.speed = Math.sqrt( (this.prevMouse.x- this.mouse.x)**2 + (this.prevMouse.y- this.mouse.y)**2 );
+
+    //dicrease or increase speed value
+    this.targetSpeed -= 0.8 *(this.targetSpeed - this.speed);
+
+    this.prevMouse.x = this.mouse.x;
+    this.prevMouse.y = this.mouse.y;
+  }
 
 	mouseSpeedUpdate(event) {
 		this.now = Date.now();
-		currentmY = event.screenY;
+		this.currentmY = event.screenY;
 
 		this.dt = this.now - this.timestamp;
 		this.distance = Math.abs(this.currentmY - this.mY);
-		this.speed = Math.round(this.distance / this.dt * 1000);
 
-		this.mouseSpeed = this.speed.toFixed(1);
+		//globaly between 0 and 10 000
+		this.mouseSpeed = Math.round(this.distance / this.dt * 1000);
 
 		this.mY = this.currentmY;
 		this.timestamp = this.now;
+
 	}
 }
 
